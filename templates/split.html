@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card shadow-lg p-4 animate__animated animate__fadeInUp">
+    <h2 class="text-center mb-3">✂️ Smart PDF Split</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" class="drop-zone mb-3">
+            <p class="mb-0">Drag & drop PDF here or click to upload</p>
+
+            <!-- IMPORTANT: file input INSIDE form -->
+            <input type="file"
+                   id="pdfInput"
+                   name="pdf"
+                   accept=".pdf"
+                   hidden
+                   required>
+        </div>
+
+        <!-- Page Info -->
+        <div id="page-info" class="text-muted mb-2 d-none">
+            Total Pages: <span id="pageCount"></span>
+        </div>
+
+        <!-- Page Preview -->
+        <div id="preview" class="page-preview mb-3"></div>
+
+        <!-- Selected Pages -->
+        <input type="text"
+               name="pages"
+               id="pagesInput"
+               class="form-control"
+               placeholder="Selected pages (e.g. 1,3,5)"
+               required>
+
+        <small class="text-muted">
+            Click pages above or enter manually
+        </small>
+
+        <button type="submit"
+                class="btn btn-success w-100 btn-lg mt-4 loading-btn">
+            Split PDF
+        </button>
+
+    </form>
+</div>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+const dropZone = document.getElementById("drop-zone");
+const pdfInput = document.getElementById("pdfInput");
+const preview = document.getElementById("preview");
+const pagesInput = document.getElementById("pagesInput");
+const pageInfo = document.getElementById("page-info");
+const pageCountEl = document.getElementById("pageCount");
+
+let selectedPages = new Set();
+
+dropZone.onclick = () => pdfInput.click();
+
+dropZone.ondragover = e => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+};
+
+dropZone.ondragleave = () => dropZone.classList.remove("dragover");
+
+dropZone.ondrop = e => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    pdfInput.files = e.dataTransfer.files;   // ✅ IMPORTANT
+    loadPDF(pdfInput.files[0]);
+};
+
+pdfInput.onchange = () => {
+    loadPDF(pdfInput.files[0]);
+};
+
+function loadPDF(file) {
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function () {
+        const pdf = await pdfjsLib.getDocument({ data: reader.result }).promise;
+        preview.innerHTML = "";
+        selectedPages.clear();
+        pageInfo.classList.remove("d-none");
+        pageCountEl.textContent = pdf.numPages;
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const pageBox = document.createElement("div");
+            pageBox.textContent = i;
+            pageBox.className = "page-box";
+            pageBox.onclick = () => togglePage(i, pageBox);
+            preview.appendChild(pageBox);
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function togglePage(page, el) {
+    if (selectedPages.has(page)) {
+        selectedPages.delete(page);
+        el.classList.remove("selected");
+    } else {
+        selectedPages.add(page);
+        el.classList.add("selected");
+    }
+    pagesInput.value = [...selectedPages].sort((a,b)=>a-b).join(",");
+}
+</script>
+
+{% endblock %}

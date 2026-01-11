@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="fw-bold gradient-text">PDF Merge & Split Tool</h1>
+    <p class="text-muted">Fast • Secure • Easy to Use</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card tool-card shadow">
+            <div class="card-body text-center">
+                <h3>📑 Merge PDFs</h3>
+                <p class="text-muted">Combine multiple PDF files into one.</p>
+                <a href="/merge" class="btn btn-primary px-4">Merge Now</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card tool-card shadow">
+            <div class="card-body text-center">
+                <h3>✂️ Split PDF</h3>
+                <p class="text-muted">Split PDF into individual pages.</p>
+                <a href="/split" class="btn btn-success px-4">Split Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card shadow-lg p-4">
+    <h2 class="text-center mb-3">📑 Merge PDF Files</h2>
+    <p class="text-center text-muted">
+        Select multiple PDF files (Ctrl + Click)
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="pdfs" multiple accept=".pdf"
+               class="form-control mb-3" required>
+
+        <button type="submit" class="btn btn-primary w-100 btn-lg loading-btn">
+        Merge PDFs
+        </button>
+
+    </form>
+</div>
+
+{% endblock %}
